@@ -21,16 +21,15 @@ app.use((req, res, next) => {
 });
 
 
-// =======================
-// UTIL: response handler
-// =======================
+// i added a simple html page just to have nice ui if i open it in browser
 function isHTML(req) {
     const accept = req.headers.accept;
     return accept && accept.includes('text/html');
 }
+
 app.get('/', (req, res) => {
     res.send(`
-        <h1>HarborStack API ⚓ </h1>
+        <h1>HarborStack API ⚓</h1>
         <p>Server is running successfully 🚀</p>
         <ul>
             <li><a href="/api/v1/crews">Crews</a></li>
@@ -39,14 +38,12 @@ app.get('/', (req, res) => {
     `);
 });
 
-// =======================
+
 // CREWS CRUD
-// =======================
-// i added simple html just for having a nice ui not a raw data if i open it in the localhost
 // GET ALL
 app.get('/api/v1/crews', (req, res) => {
     if (isHTML(req)) {
-        let html = "<h1>Crews List ⚓ </h1>";
+        let html = "<h1>Crews List ⚓</h1>";
 
         crews.forEach(c => {
             html += `
@@ -107,10 +104,6 @@ app.post('/api/v1/crews', (req, res) => {
 
     crews.push(newCrew);
 
-    if (isHTML(req)) {
-        return res.send(`<h2>Created: ${newCrew.name}</h2>`);
-    }
-
     res.status(201).json(newCrew);
 });
 
@@ -124,10 +117,6 @@ app.put('/api/v1/crews/:id', (req, res) => {
 
     crews[index] = { ...crews[index], ...req.body };
 
-    if (isHTML(req)) {
-        return res.send(`<h2>Updated Crew: ${crews[index].name}</h2>`);
-    }
-
     res.json(crews[index]);
 });
 
@@ -139,25 +128,17 @@ app.delete('/api/v1/crews/:id', (req, res) => {
 
     if (index === -1) return res.status(404).json({ error: "Crew not found" });
 
-    const deleted = crews.splice(index, 1);
-
-    if (isHTML(req)) {
-        return res.send(`<h2>Deleted: ${deleted[0].name}</h2>`);
-    }
+    crews.splice(index, 1);
 
     res.json({ message: "Deleted successfully" });
 });
 
 
-// =======================
 // SHIFTS CRUD
-// =======================
-
 // GET ALL
 app.get('/api/v1/shifts', (req, res) => {
-
     if (isHTML(req)) {
-        let html = "<h1>Shifts List 🚢 </h1>";
+        let html = "<h1>Shifts List 🚢</h1>";
 
         shifts.forEach(s => {
             html += `
@@ -193,6 +174,8 @@ app.get('/api/v1/shifts/:id', (req, res) => {
             <h1>Shift ${shift.id}</h1>
             <p>Crew: ${shift.crewId}</p>
             <p>Berth: ${shift.berth}</p>
+            <p>Starts At: ${shift.startsAt}</p>
+            <p>Ends At: ${shift.endsAt}</p>
         `);
     }
 
@@ -225,10 +208,6 @@ app.post('/api/v1/shifts', (req, res) => {
 
     shifts.push(newShift);
 
-    if (isHTML(req)) {
-        return res.send(`<h2>Shift Created for crew ${crewId}</h2>`);
-    }
-
     res.status(201).json(newShift);
 });
 
@@ -241,10 +220,6 @@ app.put('/api/v1/shifts/:id', (req, res) => {
     if (index === -1) return res.status(404).json({ error: "Shift not found" });
 
     shifts[index] = { ...shifts[index], ...req.body };
-
-    if (isHTML(req)) {
-        return res.send(`<h2>Shift Updated</h2>`);
-    }
 
     res.json(shifts[index]);
 });
@@ -259,15 +234,11 @@ app.delete('/api/v1/shifts/:id', (req, res) => {
 
     shifts.splice(index, 1);
 
-    if (isHTML(req)) {
-        return res.send(`<h2>Shift Deleted</h2>`);
-    }
-
     res.json({ message: "Deleted successfully" });
 });
 
 
-// run server
+// RUN SERVER
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
